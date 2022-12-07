@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Masakan rendang coklat",
+        "description": "Masakan rendang coklat dengan cita rasa bakar",
+        "price": 2000,
+        "CategoryId": 1
+    },
+    {
+        "name": "Masakan pisang rendang",
+        "description": "Masakan rendang pisang dengan cita rasa bau bau",
+        "price": 75000,
+        "CategoryId": 2
+    },
+    {
+        "name": "Masakan coklat sambal lado",
+        "description": "Menu yang menarik untuk dilihat tapi tidak untuk dicoba",
+        "price": 200000,
+        "CategoryId": 3
+    },
+    {
+        "name": "Masakan bakpao goreng",
+        "description": "Cita rasa baru yang sangat tidak dianjurkan untuk dicoba",
+        "price": 22000,
+        "CategoryId": 4
+    }
+]
