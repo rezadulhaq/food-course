@@ -18,19 +18,30 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init({
     email: {
-     type : DataTypes.STRING,
-     allowNull: false,
-     validate:{
-      notNull: {
-        msg: 'Please enter your email',
-      },
-      isEmail: true
-     }
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Please enter your email',
+        },
+        isEmail: true
+      }
     },
-    password: DataTypes.STRING,
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Password is required',
+        },
+        notEmpty: {
+          msg: 'Password is required'
+        }
+      }
+    },
     role: DataTypes.BOOLEAN
   }, {
-    hooks :{
+    hooks: {
       beforeCreate(instance, option) {
         let salt = bcryptjs.genSaltSync(10);
         let hash = bcryptjs.hashSync(instance.password, salt);
@@ -42,8 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
   });
-  User.beforeCreate(el =>{
-    if (el.email.slice(0,6) === 'admin.'){
+  User.beforeCreate(el => {
+    if (el.email.slice(0, 6) === 'admin.') {
       el.role = true
     } else {
       el.role = false
