@@ -131,19 +131,18 @@ class Controller {
                 imageUrl = req.session.imageUrl
                 fullName = req.session.fullName
                 return Category.findOne({
+                    where: { id: categoryId },
                     include: [
                         {
                             model: Course,
                             include: { model: UsersCourse }
                         }
                     ]
-                },
-                    {
-                        where: { id }
-                    })
+                })
             })
             .then((data) => {
                 let arr = getUserId(data.Courses[0])
+                console.log(id);
                 console.log(data.Courses)
                 res.render('./users/courseList', { id, arr, data, imageUrl, fullName, formatDate, formatRupiah })
             })
