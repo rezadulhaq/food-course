@@ -146,6 +146,8 @@ class Controller {
     }
 
     static allCourse(req, res){
+        let imageUrl
+        let fullName
         const {search} = req.query
         let option = {
             where:{}
@@ -159,7 +161,9 @@ class Controller {
         }
         Course.findAll(option)
         .then(function(data){
-            res.render('users/showAllCourse', {data, formatRupiah, formatDate})
+            imageUrl = req.session.imageUrl
+            fullName = req.session.fullName
+            res.render('users/showAllCourse', {data, formatRupiah, formatDate, imageUrl, fullName})
         })
         .catch(function(err){
             res.send(err)
@@ -214,6 +218,8 @@ class Controller {
     }
 
     static profile(req, res) {
+        let imageUrl
+        let fullName
         const id = req.session.userId
         User.findOne({
             include: [
@@ -221,16 +227,22 @@ class Controller {
                     model: UsersCourse,
                     include: { model: Course }
                 },
+                {
+                    model: Profile
+                }
                 
             ],
-                where: {
-                    id
-                }
+            where: {
+                id
+            }
             
         })
         .then((data)=>{
-            console.log(data.UsersCourses);
-            // res.render('',{data})
+            imageUrl = req.session.imageUrl
+            fullName = req.session.fullName
+            // console.log(data.UsersCourses);
+            console.log(data.Profile);
+            res.render('users/profile',{data})
         })
         .catch((err)=>{
             console.log(err);
