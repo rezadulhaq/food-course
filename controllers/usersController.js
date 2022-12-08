@@ -213,15 +213,30 @@ class Controller {
             })
     }
 
-    // static profile(req, res) {
-
-    //     .then((data)=>{
-    //         res.render('',{data)
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
-    // }
+    static profile(req, res) {
+        const id = req.session.userId
+        User.findOne({
+            include: [
+                {
+                    model: UsersCourse,
+                    include: { model: Course }
+                },
+                
+            ],
+                where: {
+                    id
+                }
+            
+        })
+        .then((data)=>{
+            console.log(data.UsersCourses);
+            // res.render('',{data})
+        })
+        .catch((err)=>{
+            console.log(err);
+            res.send(err)
+        })
+    }
 
     // static editProfileForm(req, res) {
 
