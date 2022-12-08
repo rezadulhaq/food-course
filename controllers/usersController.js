@@ -10,7 +10,8 @@ const getUserId = require('../helpers/getUserId')
 class Controller {
 
     static registerForm(req, res) {
-        res.render('./users/registerForm')
+        let {errors} = req.query
+        res.render('./users/registerForm', {errors})
     }
     static register(req, res) {
         console.log(req.body)
@@ -29,8 +30,15 @@ class Controller {
                 res.redirect('/')
             })
             .catch((err) => {
-                console.log(err)
-                res.send(err)
+                if (err.name === "SequelizeValidationError") {
+                    let dataErr = err.errors.map(function (el) {
+                        return el.message
+                    })
+                    res.redirect(`/register?errors=${dataErr}`)
+                }
+                else {
+                    res.send(err)
+                }
             })
     }
 
