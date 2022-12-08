@@ -5,6 +5,7 @@ const bcryptjs = require("bcryptjs")
 const formatDate = require('../helpers/formatDate')
 const formatRupiah = require('../helpers/formatRupiah')
 const nodeMailer = require('../helpers/nodemailer')
+const getUserId = require('../helpers/getUserId')
 
 class Controller {
 
@@ -81,7 +82,7 @@ class Controller {
         // console.log(id);
         let imageUrl
         let fullName
-        console.log(req.session);
+        // console.log(req.session);
         User.findByPk(id, {
             include: Profile
         })
@@ -90,14 +91,53 @@ class Controller {
                     fullName: data.Profile.fullName,
                     imageUrl: data.Profile.imageUrl
                 }
-                Object.assign(req.session,object)
+                Object.assign(req.session, object)
                 imageUrl = req.session.imageUrl
                 fullName = req.session.fullName
                 // result = data
                 return Category.findAll()
             })
-            .then(function(data){
+            .then(function (data) {
+                // console.log(data);
                 res.render('./users/home', { data, imageUrl, fullName, formatDate, formatRupiah })
+            })
+            .catch((err) => {
+                // console.log(err);
+                res.send(err)
+            })
+    }
+
+    static courseList(req, res) {
+        const { categoryId } = req.params
+        const id = req.session.userId
+        // console.log(search);
+        let imageUrl
+        let fullName
+        User.findByPk(id, {
+            include: {
+                model: Profile
+            }
+        })
+            .then(function (data) {
+                console.log(data.Profile);
+                imageUrl = req.session.imageUrl
+                fullName = req.session.fullName
+                return Category.findOne({
+                    include: [
+                        {
+                            model: Course,
+                            include: { model: UsersCourse }
+                        }
+                    ]
+                },
+                    {
+                        where: { id }
+                    })
+            })
+            .then((data) => {
+                let arr = getUserId(data.Courses[0])
+                console.log(data.Courses)
+                res.render('./users/courseList', {id, arr, data, imageUrl, fullName, formatDate, formatRupiah })
             })
             .catch((err) => {
                 console.log(err);
@@ -105,68 +145,98 @@ class Controller {
             })
     }
 
-    static categoryList(req, res) {
-        const id = req.params.userId
-        User.findByPk(id, {
-            model: Course,
-            include: {
-                model: Category
+    static allCourse(req, res){
+        const {search} = req.query
+        let option = {
+            where:{}
+        }
+        if(search){
+            option.where={
+                name: {
+                    [Op.iLike]: `%${search}%`
+                }
             }
+        }
+        Course.findAll(option)
+        .then(function(data){
+            res.render('users/showAllCourse', {data, formatRupiah, formatDate})
         })
-        Category.findAll()
-            .then((data) => {
-                console.log(data)
-                // res.render('./users/categoryList',{data: data.Category})
-            })
-            .catch((err) => {
-                res.send(err)
-            })
-    }
-
-    static courseList(req, res) {
-        const id = req.params.categoryId
-        Course.findAll({
-            include: Category
-        }, {
-            where: {
-                id: id
-            }
-        })
-            .then((data) => {
-                res.render('./users/courseList', { data })
-            })
-            .catch((err) => {
-                res.send(err)
-            })
-    }
-
-    static buy(req, res) {
-
-        const {courseId} = req.params
-        const {userId, email} = req.session
-        console.log(req.session,"<<<<<<<<<<<<<<<<<");
-        UsersCourse.create({UserId: userId, CourseId: courseId})
-        .then((data)=>{
-            nodeMailer(email, "pisang")
-            res.redirect('/users')
-            // res.render('',{data})
-        })
-        .catch((err)=>{
-            console.log(courseId, id,"<<<<<<<<<<<<<<<<<");
-            console.log(err);
+        .catch(function(err){
             res.send(err)
         })
     }
 
-    // static profile(req, res) {
-
-    //     .then((data)=>{
-    //         res.render('',{data)
+    // static courseList(req, res) {
+    //     const id = req.params.categoryId
+    //     Course.findAll({
+    //         include: Category
+    //     }, {
+    //         where: {
+    //             id: id
+    //         }
     //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
+    //         .then((data) => {
+    //             res.render('./users/courseList', { data })
+    //         })
+    //         .catch((err) => {
+    //             res.send(err)
+    //         })
     // }
+
+    static buy(req, res) {
+
+        const { courseId } = req.params
+        const { userId, email } = req.session
+        let result
+        Course.findOne({
+            where: { id: courseId },
+            include: {
+                model: UsersCourse
+            }
+        })
+            .then(function (data) {
+                result = data
+                return UsersCourse.create({ UserId: userId, CourseId: courseId })
+            })
+            .then((data) => {
+                console.log(result.UsersCourses);
+                nodeMailer(email, result.name)
+                
+                console.log(arr);
+                res.redirect('/users')
+                // res.render('',{data})
+            })
+            .catch((err) => {
+                // console.log(courseId, id,"<<<<<<<<<<<<<<<<<");
+                console.log(err);
+                res.send(err)
+            })
+    }
+
+    static profile(req, res) {
+        const id = req.session.userId
+        User.findOne({
+            include: [
+                {
+                    model: UsersCourse,
+                    include: { model: Course }
+                },
+                
+            ],
+                where: {
+                    id
+                }
+            
+        })
+        .then((data)=>{
+            console.log(data.UsersCourses);
+            // res.render('',{data})
+        })
+        .catch((err)=>{
+            console.log(err);
+            res.send(err)
+        })
+    }
 
     // static editProfileForm(req, res) {
 
