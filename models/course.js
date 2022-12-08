@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Course.belongsTo(models.Category)
-      Course.belongsToMany(models.User, {through: models.UsersCourse})
+      Course.hasMany(models.UsersCourse)
+    }
+    courseCodeSet(){ //instenceMethod
+      return `${this.name.toLowerCase().split(" ").join("_")}_${this.createdAt.toISOString().slice(0, 10)}`
     }
   }
   Course.init({
@@ -20,8 +23,16 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     courseCode: DataTypes.STRING,
     price: DataTypes.INTEGER,
-    CategoryId: DataTypes.INTEGER
-  }, {
+    CategoryId: DataTypes.INTEGER,
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE
+  },
+   {
+    hooks: { //hooks
+      beforeCreate: function (course, options) {
+        course.courseCode = course.courseCodeSet()
+      }
+    },
     sequelize,
     modelName: 'Course',
   });

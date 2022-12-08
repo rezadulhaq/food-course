@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      UsersCourse.belongsTo(models.User)
+      UsersCourse.belongsTo(models.Course)
     }
   }
   UsersCourse.init({
