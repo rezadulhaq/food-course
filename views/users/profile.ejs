@@ -8,9 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Profile</h1>
-    
-    <h1>Applying at Hahckjob Portal</h1><br>
+    <h1><%= name %> Profile</h1><br><br>
     <div class="container-fluid">
         <img height="20%" width="20%" src="<%= data.Profile.imageUrl %>" alt="">
         <p><b>Name:</b><%= data.Profile.fullName %></p><br>
@@ -18,6 +16,7 @@
         <p><b>age:</b> <%= data.Profile.age %></p><br>         
     </div>
     <br>
+    <a href="/users/profile/edit/<%= data.Profile.id %>"><button type="button" class="btn btn-primary">Edit Profile</button></a><br><br>
         <table class="table table-bordered border-primary">
             <tr align="center">
                 <th>No</th>
@@ -32,7 +31,7 @@
                     <td><%=el.Course.name%></td>
                     <td><%=el.Course.price%></td>
                     <td><%=el.Course.description%></td>
-                    <td><a href="/profile/<%= el.Course.id %>/delete"><button type="button" class="btn btn-warning">Delete</button></a></td>
+                    <td><a href="/users/profile/<%= el.Course.id %>/delete"><button type="button" class="btn btn-danger">Delete</button></a></td>
                 </tr>
                 <%})%>
         </table>

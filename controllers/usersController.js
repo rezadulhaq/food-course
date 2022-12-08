@@ -1,4 +1,4 @@
-const { Category, Course, Profile, User, UsersCourse, sequelize } = require("../models")
+const { Category, Course, Profile, User, UsersCourse } = require("../models")
 const { Op } = require("sequelize")
 const { fn } = require("sequelize")
 const bcryptjs = require("bcryptjs")
@@ -137,7 +137,7 @@ class Controller {
             .then((data) => {
                 let arr = getUserId(data.Courses[0])
                 console.log(data.Courses)
-                res.render('./users/courseList', {id, arr, data, imageUrl, fullName, formatDate, formatRupiah })
+                res.render('./users/courseList', { id, arr, data, imageUrl, fullName, formatDate, formatRupiah })
             })
             .catch((err) => {
                 console.log(err);
@@ -145,29 +145,29 @@ class Controller {
             })
     }
 
-    static allCourse(req, res){
+    static allCourse(req, res) {
         let imageUrl
         let fullName
-        const {search} = req.query
+        const { search } = req.query
         let option = {
-            where:{}
+            where: {}
         }
-        if(search){
-            option.where={
+        if (search) {
+            option.where = {
                 name: {
                     [Op.iLike]: `%${search}%`
                 }
             }
         }
         Course.findAll(option)
-        .then(function(data){
-            imageUrl = req.session.imageUrl
-            fullName = req.session.fullName
-            res.render('users/showAllCourse', {data, formatRupiah, formatDate, imageUrl, fullName})
-        })
-        .catch(function(err){
-            res.send(err)
-        })
+            .then(function (data) {
+                imageUrl = req.session.imageUrl
+                fullName = req.session.fullName
+                res.render('users/showAllCourse', { data, formatRupiah, formatDate, imageUrl, fullName })
+            })
+            .catch(function (err) {
+                res.send(err)
+            })
     }
 
     // static courseList(req, res) {
@@ -205,7 +205,7 @@ class Controller {
             .then((data) => {
                 console.log(result.UsersCourses);
                 nodeMailer(email, result.name)
-                
+
                 console.log(arr);
                 res.redirect('/users')
                 // res.render('',{data})
@@ -230,54 +230,80 @@ class Controller {
                 {
                     model: Profile
                 }
-                
+
             ],
             where: {
                 id
             }
-            
         })
-        .then((data)=>{
-            imageUrl = req.session.imageUrl
-            fullName = req.session.fullName
-            // console.log(data.UsersCourses);
-            console.log(data.Profile);
-            res.render('users/profile',{data})
-        })
-        .catch((err)=>{
-            console.log(err);
-            res.send(err)
-        })
+            .then((data) => {
+                imageUrl = req.session.imageUrl
+                fullName = req.session.fullName
+                // console.log(data.UsersCourses);
+                // console.log(data.Profile);
+                let name = Profile.addGender(data.Profile)
+                res.render('users/profile', { data, name })
+            })
+            .catch((err) => {
+                console.log(err);
+                res.send(err)
+            })
     }
 
-    // static editProfileForm(req, res) {
+    static editProfileForm(req, res) {
+        const id = req.session.userId
+        User.findOne({
+            include: [
+                {
+                    model: UsersCourse,
+                    include: { model: Course }
+                },
+                {
+                    model: Profile
+                }
 
-    //     .then((data)=>{
-    //         res.render('',{data)
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
-    // }
-    // static editProfile(req, res) {
+            ],
+            where: {
+                id
+            }
+        })
+            .then((data) => {
+                res.render('./users/editProfileForm', { data })
+            })
+            .catch((err) => {
+                res.send(err)
+            })
+    }
+    static editProfile(req, res) {
+        let userId = req.session.userId
+        const UserId = userId
+        const { fullName, email, password, age, imageUrl, gender } = req.body
+        Profile.update({ fullName, age, imageUrl, gender }, {where: {UserId}})
+            .then((_) => {
+                let salt = bcryptjs.genSaltSync(10);
+                let hash = bcryptjs.hashSync(password, salt);
 
-    //     .then((data)=>{
-    //         res.render('',{data})
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
-    // }
+                password = hash
+                return User.update({ email, password }, {where: {id: userId}})
+            })
+            .then((_) => {
+                res.redirect('/users/profile')
+            })
+            .catch((err) => {
+                res.send(err)
+            })
+    }
 
-    // static deleteCourse(req, res) {
-
-    //     .then((data)=>{
-    //         res.render('',{data})
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
-    // }
+    static deleteCourse(req, res) {
+        const CoursId = req.params.courseId
+        UsersCourse.destroy({where: {CoursId}})
+        .then((_) => {
+        res.redirect('/users/profile')
+    })
+            .catch((err) => {
+                res.send(err)
+            })
+    }
 
 }
 module.exports = Controller
