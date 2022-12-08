@@ -10,4 +10,6 @@ app.get('/', Controller.home) // home
 // app.get('/profile/edit', Controller.editProfileForm) // to form edit profile page
 // app.post('/profile/edit', Controller.editProfile) // update database user
 // app.get('/profile/:courseId/delete', Controller.deleteCourse) //for delete course in profile page
+
+app.get('/:courseId/buy', Controller.buy)
 module.exports = app

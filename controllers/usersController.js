@@ -2,6 +2,9 @@ const { Category, Course, Profile, User, UsersCourse, sequelize } = require("../
 const { Op } = require("sequelize")
 const { fn } = require("sequelize")
 const bcryptjs = require("bcryptjs")
+const formatDate = require('../helpers/formatDate')
+const formatRupiah = require('../helpers/formatRupiah')
+const nodeMailer = require('../helpers/nodemailer')
 
 class Controller {
 
@@ -79,14 +82,19 @@ class Controller {
     static home(req, res) {
         // res.render('./users/home')
         const id = req.session.userId
-        console.log(id);
-        console.log(req.session);
+        // console.log(id);
+        // console.log(req.session);
+        let data
         User.findByPk(id, {
             include: Profile
         })
-            .then((data) => {
-                console.log(data)
-                res.render('./users/home', { data })
+            .then((result) => {
+                data = result      
+                return Course.findAll()
+                // console.log(data)
+            })
+            .then(function(result){
+                res.render('./users/home', { data, result, formatDate, formatRupiah })
             })
             .catch((err) => {
                 res.send(err)
@@ -130,12 +138,20 @@ class Controller {
 
     static buy(req, res) {
 
-        // .then((data)=>{
-        //     res.render('',{data})
-        // })
-        // .catch((err)=>{
-        //     res.send(err)
-        // })
+        const {courseId} = req.params
+        const {userId, email} = req.session
+        console.log(req.session,"<<<<<<<<<<<<<<<<<");
+        UsersCourse.create({UserId: userId, CourseId: courseId})
+        .then((data)=>{
+            nodeMailer(email, "pisang")
+            res.redirect('/users')
+            // res.render('',{data})
+        })
+        .catch((err)=>{
+            console.log(courseId, id,"<<<<<<<<<<<<<<<<<");
+            console.log(err);
+            res.send(err)
+        })
     }
 
     // static profile(req, res) {

@@ -8,9 +8,35 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="container">
     <%- include("../partials/navbar") %> 
-
+    <div class="container">
+        <h1>Daftar User</h1>
+        <table class="table table-bordered border-primary">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama Resep</th>
+                <th scope="col">Descripsi</th>
+                <th scope="col">Harga</th>
+                <th scope="col">Tanggal Update</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <% result.map(function(el, i) { %>
+                    <tr>
+                      <th scope="row"><%= i+1 %></th>
+                      <td><%= el.name %></td>
+                      <td><%= el.description %></td>
+                      <td><%= formatRupiah(el.price) %></td>
+                      <td><%= formatDate(el.updatedAt) %></td>
+                      <td>
+                        <a href="/users/<%= el.id %>/buy" button type="button"><button class="btn btn btn-primary">Add Course</button></a>
+                      </td>
+                    </tr>
+                <% }) %> 
+            </tbody>
+          </table>
     </div>
     
 </body>
