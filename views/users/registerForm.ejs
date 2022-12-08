@@ -8,7 +8,14 @@
     <title>Login</title>
 </head>
 <body>
+  <div class="container">
+
     <h1>REGISTER</h1><br><br>
+    <% if(errors){ %>
+      <% errors.split(',').map(function(el){ %>
+          <p style="color: red;"><%= el %></p>
+      <% }) %>  
+  <% } %>
     <form action="/register" method="post">
       <div class="mb-2">
         <label for="fullName" class="form-label">Fullname</label>
@@ -46,5 +53,6 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+  </div>
 </body>
 </html>
