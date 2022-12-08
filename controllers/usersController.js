@@ -44,7 +44,6 @@ class Controller {
                     const isInvalidPassword = bcryptjs.compareSync(password, data.password)
                     if (isInvalidPassword) {
                         req.session.userId = data.id
-                        req.session.fullName = data.fullName
                         req.session.role = data.role
                         req.session.email = data.email
                         if (data.role === true) {
@@ -65,16 +64,13 @@ class Controller {
     }
 
     static logout(req, res) {
-        const id = req.session.id
-        User.findByPk(id, {
-            include: Profile
-        })
-            .then((data) => {
-                res.render('./users/home', { data })
-            })
-            .catch((err) => {
+        req.session.destroy(err => {
+            if (err) {
                 res.send(err)
-            })
+            } else {
+                res.redirect('/')
+            }
+        })
     }
 
     // batas login
@@ -83,17 +79,16 @@ class Controller {
         // res.render('./users/home')
         const id = req.session.userId
         // console.log(id);
-        // console.log(req.session);
-        let data
+        console.log(req.session);
         User.findByPk(id, {
             include: Profile
         })
-            .then((result) => {
-                data = result      
-                return Course.findAll()
-                // console.log(data)
-            })
-            .then(function(result){
+            .then((data) => {
+                let object = {
+                    fullName: data.Profile.fullName,
+                    imageUrl: data.Profile.imageUrl
+                }
+                Object.assign(req.session,object)
                 res.render('./users/home', { data, result, formatDate, formatRupiah })
             })
             .catch((err) => {
