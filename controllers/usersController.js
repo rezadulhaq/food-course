@@ -14,7 +14,7 @@ class Controller {
         User.create({ email, password })
             .then((_) => {
                 return User.findAll({
-                    where: {email: email}
+                    where: { email: email }
                 })
             })
             .then((data) => {
@@ -51,7 +51,7 @@ class Controller {
                         }
                     } else if (!isInvalidPassword) {
                         const errors = 'invalid email or password'
-                        res.redirect(`/login?error=${errors}`)
+                        res.redirect(`/?error=${errors}`)
                     }
                 }
             })
@@ -74,19 +74,23 @@ class Controller {
             })
     }
 
+    // batas login
+
     static home(req, res) {
-        res.render('./users/home')
-        // const id = req.params.userId
-        // User.findByPk(id, {
-        //     include: Profile
-        // })
-        //     .then((data) => {
-        //         // console.log(data)
-        //         res.render('./users/home', { data })
-        //     })
-        //     .catch((err) => {
-        //         res.send(err)
-        //     })
+        // res.render('./users/home')
+        const id = req.session.userId
+        console.log(id);
+        console.log(req.session);
+        User.findByPk(id, {
+            include: Profile
+        })
+            .then((data) => {
+                console.log(data)
+                res.render('./users/home', { data })
+            })
+            .catch((err) => {
+                res.send(err)
+            })
     }
 
     static categoryList(req, res) {
