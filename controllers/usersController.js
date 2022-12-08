@@ -79,6 +79,8 @@ class Controller {
         // res.render('./users/home')
         const id = req.session.userId
         // console.log(id);
+        let imageUrl
+        let fullName
         console.log(req.session);
         User.findByPk(id, {
             include: Profile
@@ -89,9 +91,16 @@ class Controller {
                     imageUrl: data.Profile.imageUrl
                 }
                 Object.assign(req.session,object)
-                res.render('./users/home', { data, result, formatDate, formatRupiah })
+                imageUrl = req.session.imageUrl
+                fullName = req.session.fullName
+                // result = data
+                return Category.findAll()
+            })
+            .then(function(data){
+                res.render('./users/home', { data, imageUrl, fullName, formatDate, formatRupiah })
             })
             .catch((err) => {
+                console.log(err);
                 res.send(err)
             })
     }
