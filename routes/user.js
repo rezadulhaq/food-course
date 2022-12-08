@@ -2,6 +2,14 @@ const express = require('express')
 const Controller = require('../controllers/usersController')
 const app = express.Router()
 
+app.use((req,res,next) => {
+    if(req.session.role === false) {
+        next()
+    } else if(req.session.role === true) {
+        res.redirect('/')
+    }
+})
+
 app.get('/', Controller.home) // home
 // app.get('/category', Controller.categoryList) //to category page
 // app.get('/category/courses/:categoryId', Controller.courseList) //to courses list by category

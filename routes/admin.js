@@ -2,6 +2,14 @@ const express = require('express')
 const Controller = require('../controllers/adminController')
 const app = express.Router()
 
+app.use((req,res,next) => {
+    if(req.session.role === true) {
+        next()
+    } else if(req.session.role === false) {
+        res.redirect('/')
+    }
+})
+
 app.get('/', Controller.showCourse)
 
 app.get('/category', Controller.showCategory)

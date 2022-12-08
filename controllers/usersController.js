@@ -62,16 +62,13 @@ class Controller {
     }
 
     static logout(req, res) {
-        const id = req.session.id
-        User.findByPk(id, {
-            include: Profile
-        })
-            .then((data) => {
-                res.render('./users/home', { data })
-            })
-            .catch((err) => {
+        req.session.destroy(err => {
+            if (err) {
                 res.send(err)
-            })
+            } else {
+                res.redirect('/')
+            }
+        })
     }
 
     // batas login
@@ -79,13 +76,13 @@ class Controller {
     static home(req, res) {
         // res.render('./users/home')
         const id = req.session.userId
-        console.log(id);
+        // console.log(id);
         console.log(req.session);
         User.findByPk(id, {
             include: Profile
         })
             .then((data) => {
-                console.log(data)
+                // console.log(data)
                 res.render('./users/home', { data })
             })
             .catch((err) => {
