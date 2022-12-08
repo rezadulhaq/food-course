@@ -12,12 +12,10 @@
     
     <h1>Applying at Hahckjob Portal</h1><br>
     <div class="container-fluid">
-        <img src="<%= data.imgUrl %>" alt="">
-        <p><b>Name:</b><%= data.fullName %></p><br>
+        <img height="20%" width="20%" src="<%= data.Profile.imageUrl %>" alt="">
+        <p><b>Name:</b><%= data.Profile.fullName %></p><br>
         <p><b>Email:</b><%= data.email %></p><br>
-        <p><b>age:</b> <%= data.age %></p><br>
-        
-        <p><b>Last Update:</b><%= date(data.createdAt) %></p><br>         
+        <p><b>age:</b> <%= data.Profile.age %></p><br>         
     </div>
     <br>
         <table class="table table-bordered border-primary">
@@ -28,7 +26,7 @@
                 <th>Description</th>
                 <th>Action</th>
             </tr>
-            <%data.UserCourses.forEach((el, i)=> {%>
+            <%data.UsersCourses.forEach((el, i)=> {%>
                 <tr align="center">
                     <td><%= +i +1%></td>
                     <td><%=el.Course.name%></td>
