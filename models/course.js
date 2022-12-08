@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       Course.belongsTo(models.Category)
       Course.hasMany(models.UsersCourse)
     }
+    static methodApa(data){
+      data.map(function(el){
+        return el.name = el.name +'aneh'
+      })
+    }
     courseCodeSet(){ //instenceMethod
       return `${this.name.toLowerCase().split(" ").join("_")}_${this.createdAt.toISOString().slice(0, 10)}`
     }
