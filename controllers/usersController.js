@@ -156,7 +156,7 @@ class Controller {
             console.log(err);
             res.send(err)
         })
-    }
+    } 
 
     // static profile(req, res) {
 
