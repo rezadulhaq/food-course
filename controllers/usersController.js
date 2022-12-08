@@ -44,7 +44,11 @@ class Controller {
                         req.session.fullName = data.fullName
                         req.session.role = data.role
                         req.session.email = data.email
-                        res.redirect('/users')
+                        if (data.role === true) {
+                            res.redirect('/admin')
+                        } else {
+                            res.redirect('/users')
+                        }
                     } else if (!isInvalidPassword) {
                         const errors = 'invalid email or password'
                         res.redirect(`/login?error=${errors}`)
@@ -120,15 +124,15 @@ class Controller {
             })
     }
 
-    // static buy(req, res) {
+    static buy(req, res) {
 
-    //     .then((data)=>{
-    //         res.render('',{data})
-    //     })
-    //     .catch((err)=>{
-    //         res.send(err)
-    //     })
-    // }
+        // .then((data)=>{
+        //     res.render('',{data})
+        // })
+        // .catch((err)=>{
+        //     res.send(err)
+        // })
+    }
 
     // static profile(req, res) {
 
