@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" style="color: white;" href="#">Halo <%= data.Profile.fullName %></a>
+    <a class="navbar-brand" style="color: white;" href="#">Halo <%= fullName %></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -21,8 +21,8 @@
       </ul>
     </div>
     <div style="float: right;">
-      <% if(data.Profile){ %>
-        <img style="height: 80px; width: 80px;" src="<%= data.Profile.imageUrl %>" alt="">
+      <% if(imageUrl){ %>
+        <img style="height: 80px; width: 80px;" src="<%= imageUrl %>" alt="">
       <% } %> 
     </div>
   </div>
