@@ -4,11 +4,11 @@ const admin = require('./admin')
 const user = require('./user')
 
 
-app.get("/register", Controller.registerForm)
-app.post("/register", Controller.register)
-
 app.get("/", Controller.loginForm)
 app.post("/", Controller.login)
+
+app.get("/register", Controller.registerForm)
+app.post("/register", Controller.register)
 
 app.get("/logout", Controller.logout)
 
