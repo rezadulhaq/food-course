@@ -41,7 +41,6 @@ class Controller {
                     const isInvalidPassword = bcryptjs.compareSync(password, data.password)
                     if (isInvalidPassword) {
                         req.session.userId = data.id
-                        req.session.fullName = data.fullName
                         req.session.role = data.role
                         req.session.email = data.email
                         if (data.role === true) {
@@ -82,7 +81,11 @@ class Controller {
             include: Profile
         })
             .then((data) => {
-                // console.log(data)
+                let object = {
+                    fullName: data.Profile.fullName,
+                    imageUrl: data.Profile.imageUrl
+                }
+                Object.assign(req.session,object)
                 res.render('./users/home', { data })
             })
             .catch((err) => {
