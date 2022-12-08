@@ -14,32 +14,74 @@ module.exports = (sequelize, DataTypes) => {
       Course.belongsTo(models.Category)
       Course.hasMany(models.UsersCourse)
     }
-    static methodApa(data){
-      data.map(function(el){
-        return el.name = el.name +'aneh'
+    static methodApa(data) {
+      data.map(function (el) {
+        return el.name = el.name + 'aneh'
       })
     }
-    courseCodeSet(){ //instenceMethod
+    courseCodeSet() { //instenceMethod
       return `${this.name.toLowerCase().split(" ").join("_")}_${this.createdAt.toISOString().slice(0, 10)}`
     }
   }
   Course.init({
-    name: DataTypes.STRING,
-    description: DataTypes.TEXT,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Course name is required`
+        },
+        notEmpty: {
+          msg: `Course name is required`
+        }
+      }
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Description is required`
+        },
+        notEmpty: {
+          msg: `Description is required`
+        }
+      }
+    },
     courseCode: DataTypes.STRING,
-    price: DataTypes.INTEGER,
-    CategoryId: DataTypes.INTEGER,
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Course price is required`
+        },
+        notEmpty: {
+          msg: `Course prise is required`
+        }
+      }
+    },
+    CategoryId: {
+      type: DataTypes.INTEGER,
+      validate: {
+        notCoosen() {
+          if(value === '--Pilih Category--') {
+            throw new Error `Please choose category`
+          }
+        }
+      }
+    },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   },
-   {
-    hooks: { //hooks
-      beforeCreate: function (course, options) {
-        course.courseCode = course.courseCodeSet()
-      }
-    },
-    sequelize,
-    modelName: 'Course',
-  });
+    {
+      hooks: { //hooks
+        beforeCreate: function (course, options) {
+          course.courseCode = course.courseCodeSet()
+        }
+      },
+      sequelize,
+      modelName: 'Course',
+    });
   return Course;
 };

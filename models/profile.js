@@ -15,11 +15,51 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Profile.belongsTo(models.User)
     }
+    static addGender(data){
+      if (data.gender === 'Male'){
+        return `Mr. ${data.fullName}`
+      } else {
+        return `Mrs. ${data.fullName}`
+      }
+    }
   }
   Profile.init({
-    fullName: DataTypes.STRING,
-    imageUrl: DataTypes.STRING,
-    age: DataTypes.INTEGER,
+    fullName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Full Name is required`
+        },
+        notEmpty: {
+          msg: `Full Name is required`
+        }
+      }
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Image Url is required`
+        },
+        notEmpty: {
+          msg: `Image Url is required`
+        }
+      }
+    },
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: `Age is required`
+        },
+        notEmpty: {
+          msg: `Age Url is required`
+        }
+      }
+    },
     gender: DataTypes.STRING,
     UserId: DataTypes.INTEGER
   }, {

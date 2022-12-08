@@ -10,5 +10,34 @@
 <body>
     <h1>Profile</h1>
     
+    <h1>Applying at Hahckjob Portal</h1><br>
+    <div class="container-fluid">
+        <img src="<%= data.imgUrl %>" alt="">
+        <p><b>Name:</b><%= data.fullName %></p><br>
+        <p><b>Email:</b><%= data.email %></p><br>
+        <p><b>age:</b> <%= data.age %></p><br>
+        
+        <p><b>Last Update:</b><%= date(data.createdAt) %></p><br>         
+    </div>
+    <br>
+        <table class="table table-bordered border-primary">
+            <tr align="center">
+                <th>No</th>
+                <th>Course Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+            <%data.UserCourses.forEach((el, i)=> {%>
+                <tr align="center">
+                    <td><%= +i +1%></td>
+                    <td><%=el.Course.name%></td>
+                    <td><%=el.Course.price%></td>
+                    <td><%=el.Course.description%></td>
+                    <td><a href="/profile/<%= el.Course.id %>/delete"><button type="button" class="btn btn-warning">Delete</button></a></td>
+                </tr>
+                <%})%>
+        </table>
+
 </body>
 </html>
