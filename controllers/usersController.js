@@ -47,6 +47,7 @@ class Controller {
     static login(req, res) {
         const { email, password } = req.body
         User.findOne({ where: { email } })
+        
             .then((data) => {
                 if (data) {
                     const isInvalidPassword = bcryptjs.compareSync(password, data.password)
@@ -54,6 +55,7 @@ class Controller {
                         req.session.userId = data.id
                         req.session.role = data.role
                         req.session.email = data.email
+                        req.session.password = password
                         if (data.role === true) {
                             res.redirect('/admin')
                         } else {
@@ -65,6 +67,7 @@ class Controller {
                     }
                 }
             })
+
             .catch((err) => {
                 res.send(err)
             })
@@ -241,6 +244,7 @@ class Controller {
     static editProfileForm(req, res) {
         let { errors } = req.query
         const id = req.session.userId
+        const password = req.session.password
         User.findOne({
             include: [
                 {
@@ -257,7 +261,7 @@ class Controller {
             }
         })
             .then((data) => {
-                res.render('./users/editProfileForm', { data, errors })
+                res.render('./users/editProfileForm', { data, errors, password })
             })
             .catch((err) => {
                 res.send(err)

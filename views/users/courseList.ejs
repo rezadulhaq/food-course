@@ -10,13 +10,12 @@
 <body>
     <%- include("../partials/navbar") %> 
     <div class="container">
-        <h1>Daftar User</h1>
+        <h1>Daftar Course</h1>
         <table class="table table-bordered border-primary">
             <thead>
               <tr>
                 <th scope="col">No</th>
                 <th scope="col">Nama Resep</th>
-                <th scope="col">Descripsi</th>
                 <th scope="col">Harga</th>
                 <th scope="col">Tanggal Update</th>
                 <th scope="col">Action</th>
@@ -27,7 +26,6 @@
                     <tr>
                       <th scope="row"><%= i+1 %></th>
                       <td><%= el.name %></td>
-                      <td><%= el.description %></td>
                       <td><%= formatRupiah(el.price) %></td>
                       <td><%= formatDate(el.updatedAt) %></td>
                       <td>
