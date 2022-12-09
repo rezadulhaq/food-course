@@ -10,11 +10,10 @@ const getUserId = require('../helpers/getUserId')
 class Controller {
 
     static registerForm(req, res) {
-        let {errors} = req.query
-        res.render('./users/registerForm', {errors})
+        let { errors } = req.query
+        res.render('./users/registerForm', { errors })
     }
     static register(req, res) {
-        console.log(req.body)
         const { fullName, email, password, age, imageUrl, gender } = req.body
         User.create({ email, password })
             .then((_) => {
@@ -67,7 +66,6 @@ class Controller {
                 }
             })
             .catch((err) => {
-                console.log(err)
                 res.send(err)
             })
     }
@@ -82,15 +80,10 @@ class Controller {
         })
     }
 
-    // batas login
-
     static home(req, res) {
-        // res.render('./users/home')
         const id = req.session.userId
-        // console.log(id);
         let imageUrl
         let fullName
-        // console.log(req.session);
         User.findByPk(id, {
             include: Profile
         })
@@ -102,15 +95,12 @@ class Controller {
                 Object.assign(req.session, object)
                 imageUrl = req.session.imageUrl
                 fullName = req.session.fullName
-                // result = data
                 return Category.findAll()
             })
             .then(function (data) {
-                // console.log(data);
                 res.render('./users/home', { data, imageUrl, fullName, formatDate, formatRupiah })
             })
             .catch((err) => {
-                // console.log(err);
                 res.send(err)
             })
     }
@@ -118,7 +108,7 @@ class Controller {
     static courseList(req, res) {
         const { categoryId } = req.params
         const id = req.session.userId
-        // console.log(search);
+
         let imageUrl
         let fullName
         User.findByPk(id, {
@@ -127,7 +117,6 @@ class Controller {
             }
         })
             .then(function (data) {
-                console.log(data.Profile);
                 imageUrl = req.session.imageUrl
                 fullName = req.session.fullName
                 return Category.findOne({
@@ -141,13 +130,13 @@ class Controller {
                 })
             })
             .then((data) => {
-                let arr = getUserId(data.Courses[0])
-                console.log(id);
-                console.log(data.Courses)
+                let arr = []
+                if (data.Courses.length !== 0) {
+                    arr = getUserId(data.Courses[0])
+                }
                 res.render('./users/courseList', { id, arr, data, imageUrl, fullName, formatDate, formatRupiah })
             })
             .catch((err) => {
-                console.log(err);
                 res.send(err)
             })
     }
@@ -210,16 +199,11 @@ class Controller {
                 return UsersCourse.create({ UserId: userId, CourseId: courseId })
             })
             .then((data) => {
-                console.log(result.UsersCourses);
                 nodeMailer(email, result.name)
-
-                console.log(arr);
-                res.redirect('/users')
+                res.redirect(`/users/category/${result.CategoryId}`)
                 // res.render('',{data})
             })
             .catch((err) => {
-                // console.log(courseId, id,"<<<<<<<<<<<<<<<<<");
-                console.log(err);
                 res.send(err)
             })
     }
@@ -246,18 +230,16 @@ class Controller {
             .then((data) => {
                 imageUrl = req.session.imageUrl
                 fullName = req.session.fullName
-                // console.log(data.UsersCourses);
-                // console.log(data.Profile);
                 let name = Profile.addGender(data.Profile)
-                res.render('users/profile', { data, name })
+                res.render('users/profile', { data, name, imageUrl, fullName })
             })
             .catch((err) => {
-                console.log(err);
                 res.send(err)
             })
     }
 
     static editProfileForm(req, res) {
+        let { errors } = req.query
         const id = req.session.userId
         User.findOne({
             include: [
@@ -275,7 +257,7 @@ class Controller {
             }
         })
             .then((data) => {
-                res.render('./users/editProfileForm', { data })
+                res.render('./users/editProfileForm', { data, errors })
             })
             .catch((err) => {
                 res.send(err)
@@ -284,29 +266,46 @@ class Controller {
     static editProfile(req, res) {
         let userId = req.session.userId
         const UserId = userId
+        let ProfileId
         const { fullName, email, password, age, imageUrl, gender } = req.body
-        Profile.update({ fullName, age, imageUrl, gender }, {where: {UserId}})
+        Profile.findOne({
+            where: {
+                UserId: UserId
+            }
+        })
+            .then(function (data) {
+                ProfileId = data.id
+                return Profile.update({ fullName, age, imageUrl, gender }, { where: { UserId } })
+            })
             .then((_) => {
                 let salt = bcryptjs.genSaltSync(10);
                 let hash = bcryptjs.hashSync(password, salt);
 
-                password = hash
-                return User.update({ email, password }, {where: {id: userId}})
+                let newPassword = hash
+                return User.update({ email, password: newPassword }, { where: { id: userId } })
             })
             .then((_) => {
                 res.redirect('/users/profile')
             })
             .catch((err) => {
-                res.send(err)
+                if (err.name === "SequelizeValidationError") {
+                    let dataErr = err.errors.map(function (el) {
+                        return el.message
+                    })
+                    res.redirect(`/users/profile/edit/${ProfileId}?errors=${dataErr}`)
+                }
+                else {
+                    res.send(err)
+                }
             })
     }
 
     static deleteCourse(req, res) {
-        const CoursId = req.params.courseId
-        UsersCourse.destroy({where: {CoursId}})
-        .then((_) => {
-        res.redirect('/users/profile')
-    })
+        const CoursId = +req.params.courseId
+        UsersCourse.destroy({ where: { CourseId: CoursId } })
+            .then((_) => {
+                res.redirect('/users/profile')
+            })
             .catch((err) => {
                 res.send(err)
             })

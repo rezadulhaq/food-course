@@ -16,7 +16,6 @@ class Controller {
 
     static formAddCourse(req, res) {
         let { errors } = req.query
-        // console.log(errors);
         Category.findAll()
             .then(function (data) {
                 res.render('admin/formAddCourse', { data, errors })
@@ -27,7 +26,6 @@ class Controller {
     }
 
     static postAddCourse(req, res) {
-        console.log(req.body);
         const { name, price, description, CategoryId } = req.body
         Course.create({
             name, price, description, CategoryId
@@ -58,7 +56,6 @@ class Controller {
             }
         })
             .then(function (data) {
-                // console.log(data.Category);
                 result = data
                 return Category.findAll()
             })
@@ -66,14 +63,12 @@ class Controller {
                 res.render('admin/formEditCourse', { data, result, errors })
             })
             .catch(function (err) {
-                console.log(err);
                 res.send(err)
             })
     }
 
     static postEditCourse(req, res) {
         const { id } = req.params
-        console.log(req.params);
         const { name, price, description, CategoryId } = req.body
         Course.update({
             name, price, description, CategoryId
@@ -155,7 +150,6 @@ class Controller {
                 where: { id }
             })
             .then(function (data) {
-                // console.log(data);
                 res.render('admin/categoryDetail', { data, formatDate, formatRupiah })
             })
             .catch(function (err) {
