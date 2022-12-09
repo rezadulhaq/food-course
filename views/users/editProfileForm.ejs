@@ -8,7 +8,13 @@
     <title>Document</title>
 </head>
 <body>
+    <br><br>
     <h1>Edit Profile</h1><br><br>
+    <% if(errors){ %>
+        <% errors.split(',').map(function(el){ %>
+            <p style="color: red;"><%= el %></p>
+        <% }) %>  
+    <% } %>
     <form action="/users/profile/edit/<%= data.Profile.id %>" method="post">
         <div class="mb-2">
           <label for="fullName" class="form-label">Fullname</label>
@@ -33,14 +39,14 @@
           </div>
           <label for="imageUrl" class="form-label">Gender</label>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="gender" id="Male" value="Male">
-            <label class="form-check-label" for="Male">
+            <input class="form-check-input" type="radio" name="gender" id="Male" <%= data.Profile.gender === "Male" ? "checked": "" %> value="Male">
+            <label class="form-check-label" for="Male" >
               Male
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="gender" id="Female" checked value="Female">
-            <label class="form-check-label" for="Female">
+            <input class="form-check-input" type="radio" name="gender" id="Female" <%= data.Profile.gender === "Female" ? "checked": "" %> value="Female">
+            <label class="form-check-label"  for="Female">
               Female
             </label>
           </div>
